@@ -1,0 +1,70 @@
+const mongoClient = require("mongodb").MongoClient;
+mongoClient.connect("mongodb://localhost", { useUnifiedTopology: true })
+            .then(conn => global.conn = conn.db("cadastrodb"))
+            .catch(err => console.log(err))
+ 
+const TAMANHO_PAGINA = 10; 
+
+function findCategorias(pagina){ 
+    const tamanhoSkip = TAMANHO_PAGINA * (pagina - 1); 
+    return global.conn.collection("categorias")
+	.find({})
+	.skip(tamanhoSkip)
+	.limit(TAMANHO_PAGINA)
+	.toArray(); 
+}
+
+function insertCategoria(categoria, callback){
+    global.conn.collection("categorias").insertOne(categoria, callback);
+}
+
+var ObjectId = require("mongodb").ObjectId;
+function findCategoria(id, callback){  
+    global.conn.collection("categorias").find(new ObjectId(id)).toArray(callback);
+}
+
+function updateCategoria(id, categoria, callback){
+    global.conn.collection("categorias").updateOne({_id: new ObjectId(id)}, {$set: categoria}, callback);
+}
+
+function deleteCategoria(id, callback){
+    global.conn.collection("categorias").deleteOne({_id: new ObjectId(id)}, callback);
+}
+ 
+function countAllcategoria(){  
+    return global.conn.collection("categorias").countDocuments();
+}
+
+function findProdutos(pagina){ 
+    const tamanhoSkip = TAMANHO_PAGINA * (pagina - 1); 
+    return global.conn.collection("produtos")
+	.find({})
+	.skip(tamanhoSkip)
+	.limit(TAMANHO_PAGINA)
+	.toArray(); 
+}
+
+function insertProduto(produto, callback){
+    global.conn.collection("produtos").insertOne(produto, callback);
+}
+
+var ObjectId = require("mongodb").ObjectId;
+function findProduto(id, callback){  
+    global.conn.collection("produto").find(new ObjectId(id)).toArray(callback);
+}
+
+function updateProduto(id, produto, callback){
+    global.conn.collection("produtos").updateOne({_id: new ObjectId(id)}, {$set: produto}, callback);
+}
+
+function deleteProduto(id, callback){
+    global.conn.collection("produtos").deleteOne({_id: new ObjectId(id)}, callback);
+}
+ 
+function countAllProduto(){  
+    return global.conn.collection("produtos").countDocuments();
+}
+
+module.exports = { findCategorias, insertCategoria, findCategoria, updateCategoria, deleteCategoria, countAllCategoria, findProdutos, insertProduto, findProduto, updateProduto, deleteProduto, countAllProduto, TAMANHO_PAGINA }
+
+
